@@ -34,13 +34,31 @@ public:
             smallest = left;
         }
 
-        if (right < heap.size() && heap[right].priority < heap[right].priority) {
+        if (right < heap.size() && heap[right].priority < heap[smallest].priority) {
             smallest = right;
         }
         if (smallest != root) {
             swapNode(smallest, root);
             minHeapify(smallest);
         }
+    }
+
+    bool isEmpty() {
+        if (heap.size() < 1) {
+            return true;
+        }
+        return false;
+    }
+
+    HeapNode extractMin() {
+        if (isEmpty()) {
+            return HeapNode();
+        }
+        auto node = heap[1];
+        heap[1] = heap[heap.size() - 1];
+        heap.erase(heap.end()-1);
+        minHeapify(1);
+        return node;
     }
 
     int findNode(int id) {
@@ -102,6 +120,10 @@ int main()
     auto minTask = heap.getHeightest();
     cout << minTask.first << ", p: " << minTask.second << endl;
     heap.update(3, 1);
+    minTask = heap.getHeightest();
+    cout << minTask.first << ", p: " << minTask.second << endl;
+    auto task = heap.extractMin();
+    cout << task.id << ", p: " << task.priority << endl;
     minTask = heap.getHeightest();
     cout << minTask.first << ", p: " << minTask.second << endl;
     std::cout << "Hello World!\n";
