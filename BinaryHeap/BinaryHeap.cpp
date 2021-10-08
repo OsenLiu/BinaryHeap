@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <unordered_map>
 
 using namespace std;
 
@@ -13,6 +14,7 @@ struct HeapNode {
 
 class BinaryHeap {
     vector<HeapNode> heap{0};
+    unordered_map<int, int> pos;
 
 public:
     BinaryHeap() {
@@ -21,6 +23,10 @@ public:
 
     void swapNode(int x, int y) {
         auto temp = heap[x];
+        auto xId = heap[x].id;
+        auto yId = heap[y].id;
+        pos[xId] = y;
+        pos[yId] = x;
         heap[x] = heap[y];
         heap[y] = temp;
     }
@@ -55,19 +61,18 @@ public:
             return HeapNode();
         }
         auto node = heap[1];
+        pos.erase(node.id);
         heap[1] = heap[heap.size() - 1];
-        heap.erase(heap.end()-1);
+        pos[heap[1].id] = 1;
+        heap.erase(heap.end()-1);       
         minHeapify(1);
         return node;
     }
 
     int findNode(int id) {
-        for (int i = 1; i < heap.size(); ++i) {
-            if (heap[i].id == id) {
-                return i;
-            }
-        }
-        return -1;
+        if (pos.find(id) == pos.end())
+            return -1;
+        return pos[id];
     }
 
     void update(int id, int priority) {
@@ -99,6 +104,7 @@ public:
 
     void insert(HeapNode task) {
         heap.push_back(task);
+        pos[task.id] = heap.size() - 1;
         update(task.id, task.priority);
     }
 
